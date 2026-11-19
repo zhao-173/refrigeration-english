@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>制冷方向《专业英语》复习网站</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#fff; --text:#1f2937; --muted:#6b7280;
+    --primary:#2563eb; --primary-dark:#1d4ed8;
+    --success:#15803d; --success-bg:#dcfce7;
+    --error:#b91c1c; --error-bg:#fee2e2;
+    --info:#1d4ed8; --info-bg:#dbeafe;
+    --border:#e5e7eb; --soft:#f1f5f9; --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    line-height:1.6;}
+  .app-header{max-width:860px;margin:0 auto;padding:28px 18px 12px;text-align:center}
+  .app-header h1{margin:0 0 16px;font-size:26px;letter-spacing:.5px}
+  .mode-switch{display:inline-flex;gap:8px;padding:5px;background:#e8eef8;border-radius:999px}
+  .mode-btn{border:none;background:transparent;color:#334155;padding:9px 20px;border-radius:999px;font-size:15px;cursor:pointer}
+  .mode-btn.active{background:var(--card);color:var(--primary);font-weight:700;box-shadow:0 2px 8px rgba(15,23,42,.08)}
+  main{max-width:860px;margin:0 auto;padding:12px 18px 40px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 10px 30px rgba(15,23,42,.06);padding:22px}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:14px;margin-bottom:18px;border-bottom:1px solid var(--border);color:var(--muted);font-size:14px}
+  .toolbar-left,.toolbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .random-label{display:inline-flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer;user-select:none}
+  .label{margin:0 0 10px;color:var(--muted);font-size:14px}
+  .meaning-main{min-height:64px;display:flex;align-items:center;justify-content:center;padding:14px 16px;margin-bottom:14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;color:#9a3412;font-size:clamp(20px,4vw,28px);font-weight:700;text-align:center;word-break:break-word}
+  .phonetic-tip{margin:10px 0;padding:12px 14px;background:var(--soft);border-radius:12px;color:#0f172a;font-size:20px;font-weight:700;text-align:center;word-break:break-word}
+  .answer-tip{margin:10px 0;padding:12px 14px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:12px;color:#166534;font-size:20px;font-weight:700;text-align:center;word-break:break-word}
+  input[type=text]{width:100%;margin-top:14px;padding:14px 16px;border:2px solid var(--border);border-radius:12px;outline:none;font-size:18px;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s}
+  input[type=text]:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+  input[type=text]:disabled{background:#f8fafc;color:#94a3b8}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  button{font-family:inherit}
+  .primary,.secondary,.ghost{border:none;border-radius:11px;padding:11px 18px;font-size:15px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+  .primary{background:var(--primary);color:#fff;font-weight:700}
+  .primary:hover{background:var(--primary-dark)}
+  .secondary{background:#eef4ff;color:var(--primary);font-weight:600}
+  .secondary:hover{background:#dbeafe}
+  .ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+  .ghost:hover{background:#f8fafc;color:var(--text)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .feedback{min-height:28px;margin-top:12px;font-size:15px;font-weight:600}
+  .feedback.success{color:var(--success);background:var(--success-bg);padding:9px 12px;border-radius:10px}
+  .feedback.error{color:var(--error);background:var(--error-bg);padding:9px 12px;border-radius:10px}
+  .feedback.info{color:var(--info);background:var(--info-bg);padding:9px 12px;border-radius:10px}
+  .english{margin:0 0 16px;padding:16px;background:var(--soft);border-radius:14px;color:#0f172a;font-size:18px;line-height:1.85;white-space:pre-wrap;word-break:break-word}
+  .translation{margin-top:14px;padding:15px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;color:#166534;font-size:16px;line-height:1.85;white-space:pre-wrap}
+  .summary{text-align:center;padding:22px 8px 10px}
+  .summary h2{margin:0 0 10px;font-size:24px}
+  .summary p{margin:0 0 18px;color:var(--muted);font-size:16px}
+  .hidden{display:none!important}
+  .site-footer{max-width:860px;margin:0 auto;padding:0 18px 28px;text-align:center;color:#94a3b8;font-size:13px}
+  @media(max-width:560px){
+    .app-header{padding-top:20px}
+    .app-header h1{font-size:21px}
+    .card{padding:16px}
+    .mode-btn{padding:8px 14px;font-size:14px}
+    .primary,.secondary,.ghost{width:100%}
+    .actions{flex-direction:column}
+    .english{font-size:16px}
+  }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <h1>制冷方向《专业英语》复习网站</h1>
+  <div class="mode-switch">
+    <button id="modeSpelling" class="mode-btn active" type="button">单词拼写</button>
+    <button id="modeTranslation" class="mode-btn" type="button">语料翻译</button>
+  </div>
+</header>
+
+<main>
+  <section id="spellingSection" class="card">
+    <div class="toolbar">
+      <div class="toolbar-left"><span id="spellProgress">第 1 / 1 个</span></div>
+      <div class="toolbar-right">
+        <label class="random-label"><input id="randomToggle" type="checkbox" /> 随机顺序</label>
+        <button class="ghost reset-progress" type="button">重置进度</button>
+      </div>
+    </div>
+
+    <div id="spellPlayArea">
+      <p class="label">请根据中文释义拼写英文单词：</p>
+      <div id="meaningMain" class="meaning-main"></div>
+
+      <div id="phoneticTip" class="phonetic-tip hidden"></div>
+      <div id="answerTip" class="answer-tip hidden"></div>
+
+      <input id="spellInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入单词后按回车" />
+
+      <div class="actions">
+        <button id="submitSpell" class="primary" type="button">提交</button>
+        <button id="showPhonetic" class="secondary" type="button">查看音标提示</button>
+        <button id="showAnswer" class="secondary" type="button">查看答案</button>
+        <button id="prevSpell" class="ghost" type="button">上一个</button>
+        <button id="nextSpell" class="ghost" type="button">下一个</button>
+      </div>
+
+      <div id="feedback" class="feedback"></div>
+    </div>
+
+    <div id="spellSummary" class="summary hidden">
+      <h2>本轮完成</h2>
+      <p id="summaryText"></p>
+      <button id="restartSpell" class="primary" type="button">重新开始</button>
+    </div>
+  </section>
+
+  <section id="translationSection" class="card hidden">
+    <div class="toolbar">
+      <div class="toolbar-left"><span id="transProgress">第 1 / 1 段</span></div>
+      <div class="toolbar-right"><button class="ghost reset-progress" type="button">重置进度</button></div>
+    </div>
+
+    <div id="transArea">
+      <p id="englishText" class="english"></p>
+      <div class="actions">
+        <button id="transToggle" class="secondary" type="button">显示翻译</button>
+        <button id="prevTrans" class="ghost" type="button">上一个</button>
+        <button id="nextTrans" class="primary" type="button">下一个</button>
+      </div>
+      <div id="translationText" class="translation hidden"></div>
+      <div id="transFeedback" class="feedback"></div>
+    </div>
+
+    <div id="transDone" class="summary hidden">
+      <h2>已完成</h2>
+      <p>全部语料已浏览完毕。</p>
+      <button id="restartTrans" class="primary" type="button">重新开始</button>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">本站内容仅供参考</footer>
+
+<script>
+/* ========== 配置 ========== */
+const STRICT_MODE = false;
+
+/* ========== 单词库：w=单词 p=音标 m=中文释义 ========== */
+const WORDS_RAW = `
+(engineering) thermodynamics|/ˌendʒɪˈnɪərɪŋ ˌθɜːməʊdaɪˈnæmɪks/|(工程) 热力学
+thermophysical property|/ˌθɜːməʊˈfɪzɪkəl ˈprɒpəti/|热物理性质
+thermodynamic property|/ˌθɜːməʊdaɪˈnæmɪk ˈprɒpəti/|热力学性质/参数
+surrounding|/səˈraʊndɪŋ/|外界, 环境
+boundary (layer)|/ˈbaʊndəri ˈleɪə/|边界(层)
+closed system|/kləʊzd ˈsɪstəm/|闭口系统
+open system|/ˈəʊpən ˈsɪstəm/|开口系统
+isolated system|/ˈaɪsəleɪtɪd ˈsɪstəm/|孤立系统
+classical / statistical thermodynamics|/ˈklæsɪkəl 或 ˌstætɪˈstɪkəl ˌθɜːməʊdaɪˈnæmɪks/|经典/统计热力学
+specific heat (capacity)|/spəˈsɪfɪk hiːt kəˈpæsəti/|比热(容)
+specific volume|/spəˈsɪfɪk ˈvɒljuːm/|比体积/比容
+(specific) entropy / work|/spəˈsɪfɪk ˈentrəpi 或 wɜːk/|(比)熵/功
+extensive property|/ɪkˈstensɪv ˈprɒpəti/|广延量
+intensive property|/ɪnˈtensɪv ˈprɒpəti/|强度量
+equilibrium state|/ˌiːkwɪˈlɪbriəm steɪt/|平衡状态
+thermal / phase equilibrium|/ˈθɜːməl 或 feɪz ˌiːkwɪˈlɪbriəm/|热/相 平衡
+steady state|/ˈstedi steɪt/|稳定状态/稳态
+the law of energy conservation|/ðə lɔː əv ˈenədʒi ˌkɒnsəˈveɪʃən/|能量守恒定律
+the first law of thermodynamics|/ðə fɜːst lɔː əv ˌθɜːməʊdaɪˈnæmɪks/|热力学第一定律
+total energy|/ˈtəʊtəl ˈenədʒi/|总能
+system boundary|/ˈsɪstəm ˈbaʊndəri/|系统边界
+kinetic energy|/kɪˈnetɪk ˈenədʒi/|动能
+(gravitational) potential energy|/ˌɡrævɪˈteɪʃənəl pəˈtenʃəl ˈenədʒi/|(重力)势能
+internal energy|/ɪnˈtɜːnəl ˈenədʒi/|内能
+initial / final state|/ɪˈnɪʃəl 或 ˈfaɪnəl steɪt/|初始/终了状态
+(specific) enthalpy|/spəˈsɪfɪk ˈenθəlpi/|(比)焓
+control volume|/kənˈtrəʊl ˈvɒljuːm/|控制体
+coefficient of performance (COP)|/ˌkəʊɪˈfɪʃənt əv pəˈfɔːməns/|性能系数
+one-dimensional flow|/wʌn daɪˈmenʃənəl fləʊ/|一维流动
+energy balance|/ˈenədʒi ˈbæləns/|能量平衡
+thermodynamic cycle|/ˌθɜːməʊdaɪˈnæmɪk ˈsaɪkəl/|热力循环
+pressure-enthalpy diagram|/ˈpreʃə ˈenθəlpi ˈdaɪəɡræm/|压焓图
+heat/mass / energy transfer|/hiːt 或 mæs 或 ˈenədʒi ˈtrænsfɜː/|热/质/能量 传递
+theoretical / actual refrigeration cycle|/ˌθɪəˈretɪkəl 或 ˈæktʃuəl rɪˌfrɪdʒəˈreɪʃən ˈsaɪkəl/|理论/实际 制冷循环
+the second law of thermodynamics|/ðə ˈsekənd lɔː əv ˌθɜːməʊdaɪˈnæmɪks/|热力学第二定律
+Kelvin-Planck statement|/ˈkelvɪn ˈplæŋk ˈsteɪtmənt/|开尔文-普朗克表述
+Clausius statement|/ˈklɔːziəs ˈsteɪtmənt/|克劳修斯表述
+single reservoir|/ˈsɪŋɡəl ˈrezəvwɑː/|单一热源
+heat engine (cycle)|/hiːt ˈendʒɪn ˈsaɪkəl/|热机(循环)
+thermal efficiency|/ˈθɜːməl ɪˈfɪʃənsi/|热效率
+reversible process / cycle|/rɪˈvɜːsəbəl ˈprəʊses 或 ˈsaɪkəl/|可逆过程/循环
+irreversible process / cycle|/ˌɪrɪˈvɜːsəbəl ˈprəʊses 或 ˈsaɪkəl/|不可逆过程/循环
+(finite) temperature difference/ differential|/ˈfaɪnaɪt ˈtemprətʃə ˈdɪfrəns 或 ˌdɪfəˈrenʃəl/|(有限)温差
+Carnot cycle|/ˈkɑːnəʊ ˈsaɪkəl/|卡诺循环
+isothermal process|/ˌaɪsəʊˈθɜːməl ˈprəʊses/|等温过程
+adiabatic (expansion / compression) process|/ˌædiəˈbætɪk ɪkˈspænʃən 或 kəmˈpreʃən ˈprəʊses/|绝热(膨胀/压缩)过程
+constant pressure / temperature process|/ˈkɒnstənt ˈpreʃə 或 ˈtemprətʃə ˈprəʊses/|等/定 压/温 过程
+thermal conduction|/ˈθɜːməl kənˈdʌkʃən/|热传导
+thermal convection|/ˈθɜːməl kənˈvekʃən/|热对流
+thermal radiation|/ˈθɜːməl ˌreɪdiˈeɪʃən/|热辐射
+Fourier's law|/ˈfʊrieɪz lɔː/|傅里叶定律
+heat flux|/hiːt flʌks/|热通量, 热流密度
+temperature gradient|/ˈtemprətʃə ˈɡreɪdiənt/|温度梯度
+thermal conductivity|/ˈθɜːməl ˌkɒndʌkˈtɪvəti/|导热系数, 热导率
+forced convection|/fɔːst kənˈvekʃən/|强制对流
+free/natural convection|/friː 或 ˈnætʃərəl kənˈvekʃən/|自由/自然对流
+(convective / overall) heat transfer coefficient|/kənˈvektɪv 或 ˌəʊvərˈɔːl hiːt ˈtrænsfɜː ˌkəʊɪˈfɪʃənt/|(对流/总)传热系数
+black body|/blæk ˈbɒdi/|黑体
+absolute temperature|/ˈæbsəluːt ˈtemprətʃə/|绝对温度
+Stefan-Boltzmann constant/ law|/ˈstefən ˈbɒltsmən ˈkɒnstənt 或 lɔː/|斯特藩-玻尔兹曼常数/定律
+comfort air-conditioning|/ˈkʌmfət ˈeə kənˌdɪʃənɪŋ/|舒适空调
+industrial air-conditioning|/ɪnˈdʌstriəl ˈeə kənˌdɪʃənɪŋ/|工艺/工业 空调
+commercial / industrial refrigeration|/kəˈmɜːʃəl 或 ɪnˈdʌstriəl rɪˌfrɪdʒəˈreɪʃən/|商用/工业 制冷
+insulation / insulating material|/ˌɪnsjʊˈleɪʃən 或 ˈɪnsjʊleɪtɪŋ məˈtɪəriəl/|绝缘/热材料, 绝缘物
+mechanical vapor compression refrigeration|/mɪˈkænɪkəl ˈveɪpə kəmˈpreʃən rɪˌfrɪdʒəˈreɪʃən/|机械式蒸汽压缩制冷
+refrigeration / refrigerating capacity / effect|/rɪˌfrɪdʒəˈreɪʃən 或 rɪˈfrɪdʒəreɪtɪŋ kəˈpæsəti 或 ɪˈfekt/|制冷量
+ice-making plant|/aɪs ˈmeɪkɪŋ plɑːnt/|制冰厂, 制冰装置
+cold store / storage|/kəʊld stɔː 或 ˈstɔːrɪdʒ/|冷库
+humidity|/hjuːˈmɪdəti/|湿度
+Refrigerator / fridge|/rɪˈfrɪdʒəreɪtə 或 frɪdʒ/|冰箱, 冷柜
+chilled / frozen food|/tʃɪld 或 ˈfrəʊzən fuːd/|冷却/冷冻食品
+air conditioner|/eə kənˈdɪʃənə/|空调器
+water chiller unit|/ˈwɔːtə ˈtʃɪlə ˈjuːnɪt/|冷水机组
+evaporator|/ɪˈvæpəreɪtə/|蒸发器
+condenser|/kənˈdensə/|冷凝器
+throttling device /valve /process|/ˈθrɒtlɪŋ dɪˈvaɪs 或 vælv 或 ˈprəʊses/|节流装置/阀/过程
+receiver|/rɪˈsiːvə/|贮液器/桶
+pipe joint|/paɪp dʒɔɪnt/|管接头
+refrigeration loop / circuit|/rɪˌfrɪdʒəˈreɪʃən luːp 或 ˈsɜːkɪt/|制冷环/回路
+refrigerant|/rɪˈfrɪdʒərənt/|制冷剂
+discharge / suction / liquid line|/dɪsˈtʃɑːdʒ 或 ˈsʌkʃən 或 ˈlɪkwɪd laɪn/|排气/吸气/液体管道
+saturation / saturated liquid / vapor|/ˌsætʃəˈreɪʃən 或 ˈsætʃəreɪtɪd ˈlɪkwɪd 或 ˈveɪpə/|饱和液体/蒸汽
+flash gas|/flæʃ ɡæs/|闪发气体
+thermal / thermostatic / electronic expansion valve|/ˈθɜːməl 或 ˌθɜːməˈstætɪk 或 ɪˌlekˈtrɒnɪk ɪkˈspænʃən vælv/|热/热力/电子 膨胀阀
+capillary tube|/kəˈpɪləri tjuːb/|毛细管
+air/water -cooled condenser|/eə 或 ˈwɔːtə kuːld kənˈdensə/|空(气)/水 冷却式冷凝器
+cooling tower|/ˈkuːlɪŋ ˈtaʊə/|冷却塔
+subcooled liquid|/sʌbˈkuːld ˈlɪkwɪd/|过冷液体
+superheated vapor|/ˌsuːpəˈhiːtɪd ˈveɪpə/|过热蒸汽
+evaporation / evaporating / evaporator pressure|/ɪˌvæpəˈreɪʃən 或 ɪˈvæpəreɪtɪŋ 或 ɪˈvæpəreɪtə ˈpreʃə/|蒸发压力
+condensation / condensing / condenser pressure|/ˌkɒndenˈseɪʃən 或 kənˈdensɪŋ 或 kənˈdensə ˈpreʃə/|冷凝压力
+crankcase|/ˈkræŋkkeɪs/|曲轴箱
+float valve|/fləʊt vælv/|浮球阀
+reciprocating / scroll compressor|/rɪˈsɪprəkeɪtɪŋ 或 skrəʊl kəmˈpresə/|往复/涡旋 式压缩机
+cooling medium|/ˈkuːlɪŋ ˈmiːdiəm/|冷却介质
+single-stage vapor compression|/ˈsɪŋɡəl steɪdʒ ˈveɪpə kəmˈpreʃən/|单级蒸气压缩
+liquid slugging|/ˈlɪkwɪd ˈslʌɡɪŋ/|液击
+evaporative-cooled type|/ɪˈvæpəreɪtɪv kuːld taɪp/|蒸发冷却型
+two / double-stage / compound vapor compression|/tuː 或 ˈdʌbəl steɪdʒ 或 ˈkɒmpaʊnd ˈveɪpə kəmˈpreʃən/|双级蒸气压缩
+defrost|/ˌdiːˈfrɒst/|除霜
+tube-in-tube type (heat exchanger/condenser)|/tjuːb ɪn tjuːb taɪp hiːt ɪksˈtʃeɪndʒə 或 kənˈdensə/|套管式(热交换器/冷凝器)
+multi-stage vapor compression|/ˈmʌlti steɪdʒ ˈveɪpə kəmˈpreʃən/|多级蒸气压缩
+auxiliary equipment|/ɔːɡˈzɪliəri ɪˈkwɪpmənt/|辅助设备
+shell-and-coil (heat exchanger / condenser)|/ʃel ənd kɔɪl hiːt ɪksˈtʃeɪndʒə 或 kənˈdensə/|壳(盘)管式(热交换器/冷凝器)
+cascade vapor compression|/kæˈskeɪd ˈveɪpə kəmˈpreʃən/|复叠式蒸气压缩
+heat source|/hiːt sɔːs/|热源
+shell-and-tube (heat exchanger / condenser)|/ʃel ənd tjuːb hiːt ɪksˈtʃeɪndʒə 或 kənˈdensə/|壳(直)管式(热交换器/冷凝器)
+clearance volume/efficiency|/ˈklɪərəns ˈvɒljuːm 或 ɪˈfɪʃənsi/|余隙容积/效率
+(four-way) reversing valve|/fɔː weɪ rɪˈvɜːsɪŋ vælv/|(四通)换向阀
+heat exchanger|/hiːt ɪksˈtʃeɪndʒə/|热交换器/换热器
+finned surface / tube|/fɪnd ˈsɜːfɪs 或 tjuːb/|翅片表面/管
+heat pump|/hiːt pʌmp/|热泵
+air-conditioning unit|/ˈeə kənˌdɪʃənɪŋ ˈjuːnɪt/|空调机组
+HVAC&R (Heating, Ventilating, Air-Conditioning and refrigeration)|/ˈhiːtɪŋ ˈventɪleɪtɪŋ ˈeə kənˌdɪʃənɪŋ ənd rɪˌfrɪdʒəˈreɪʃən/|暖通空调和制冷
+single-cold air conditioning|/ˈsɪŋɡəl kəʊld ˈeə kənˌdɪʃənɪŋ/|单冷空调
+heating mode|/ˈhiːtɪŋ məʊd/|供/制 热模式
+cooling mode|/ˈkuːlɪŋ məʊd/|供/制 冷模式
+air-handling capacity /unit|/eə ˈhændlɪŋ kəˈpæsəti 或 ˈjuːnɪt/|空气处理容量/机组
+indoor unit / coil|/ˈɪndɔː ˈjuːnɪt 或 kɔɪl/|室内机组/盘管
+duct system, ductwork|/dʌkt ˈsɪstəm 或 ˈdʌktwɜːk/|风道/管 系统
+accumulator|/əˈkjuːmjəleɪtə/|气液分离器
+freezing point|/ˈfriːzɪŋ pɔɪnt/|冰点, 凝固点
+pressure differential / difference|/ˈpreʃə ˌdɪfəˈrenʃəl 或 ˈdɪfrəns/|压差
+air cooler|/eə ˈkuːlə/|空气冷却器、冷风机
+bare tube|/beə tjuːb/|光管
+dry-expansion evaporator|/draɪ ɪkˈspænʃən ɪˈvæpəreɪtə/|干膨胀式蒸发器
+flooded (type) evaporator|/ˈflʌdɪd taɪp ɪˈvæpəreɪtə/|满液式蒸发器
+circulated refrigerant type evaporator|/ˈsɜːkjəleɪtɪd rɪˈfrɪdʒərənt taɪp ɪˈvæpəreɪtə/|循环制冷剂型蒸发器
+refrigerant feed|/rɪˈfrɪdʒərənt fiːd/|制冷剂供液
+(internally / externally equalized) thermostatic expansion valve|/ɪnˈtɜːnəli 或 ɪkˈstɜːnəli ˈiːkwəlaɪzd ˌθɜːməˈstætɪk ɪkˈspænʃən vælv/|(内/外平衡式)热力膨胀阀
+all-air system|/ɔːl eə ˈsɪstəm/|全空气系统
+air-water system|/eə ˈwɔːtə ˈsɪstəm/|空气-水系统
+refrigerant system|/rɪˈfrɪdʒərənt ˈsɪstəm/|制冷剂/冷媒系统
+central / centralized air conditioning system|/ˈsentrəl 或 ˈsentrəlaɪzd eə kənˈdɪʃənɪŋ ˈsɪstəm/|集中式/中央空调系统
+fan-coil unit|/fæn kɔɪl ˈjuːnɪt/|风机盘管机组
+cooling / heating load|/ˈkuːlɪŋ 或 ˈhiːtɪŋ ləʊd/|冷/热负荷
+split / packaged unit|/splɪt 或 ˈpækɪdʒd ˈjuːnɪt/|分体式/组合式/整体式机组
+dry / humid air|/draɪ 或 ˈhjuːmɪd eə/|干/湿空气
+psychrometric chart|/ˌsaɪkrəʊˈmetrɪk tʃɑːt/|焓湿图
+dry-bulb / wet-bulb temperature|/draɪ bʌlb 或 wet bʌlb ˈtemprətʃə/|干球/湿球温度
+relative / absolute humidity|/ˈrelətɪv 或 ˈæbsəluːt hjuːˈmɪdəti/|相对/绝对湿度
+humidity ratio|/hjuːˈmɪdəti ˈreɪʃiəʊ/|含湿量
+dew-point temperature|/djuː pɔɪnt ˈtemprətʃə/|露点温度
+sensible/latent heat|/ˈsensəbəl 或 ˈleɪtənt hiːt/|显/潜热
+apparatus dew point|/ˌæpəˈreɪtəs djuː pɔɪnt/|机器露点
+heat gain / loss|/hiːt ɡeɪn 或 lɒs/|得/失热(量)
+outdoor / exhaust air|/ˈaʊtdɔː 或 ɪɡˈzɔːst eə/|新/排风
+single-duct variable air temperature with recirculation system|/ˈsɪŋɡəl dʌkt ˈveəriəbəl eə ˈtemprətʃə wɪð riːˌsɜːkjəˈleɪʃən ˈsɪstəm/|单风道变空气温度回风系统
+boiler|/ˈbɔɪlə/|锅炉
+supply /return air|/səˈplaɪ 或 rɪˈtɜːn eə/|送/回风
+variable air volume (VAV) (air-conditioning) system|/ˈveəriəbəl eə ˈvɒljuːm eə kənˈdɪʃənɪŋ ˈsɪstəm/|变风量(VAV)(空气调节)系统
+constant air volume (air-conditioning) system|/ˈkɒnstənt eə ˈvɒljuːm eə kənˈdɪʃənɪŋ ˈsɪstəm/|定风量(空气调节)系统
+absorption refrigeration|/əbˈzɔːpʃən rɪˌfrɪdʒəˈreɪʃən/|吸收式制冷
+energy saving / conservation|/ˈenədʒi ˈseɪvɪŋ 或 ˌkɒnsəˈveɪʃən/|节能
+single- /double- /triple- effect / absorption|/ˈsɪŋɡəl 或 ˈdʌbəl 或 ˈtrɪpəl ɪˈfekt 或 əbˈzɔːpʃən/|单/双/三效吸收
+solution heat exchanger|/səˈluːʃən hiːt ɪksˈtʃeɪndʒə/|溶液热交换器
+absorbent|/əbˈzɔːbənt/|吸收剂
+working pairs|/ˈwɜːkɪŋ peəz/|工质对
+water-lithium bromide absorption unit|/ˈwɔːtə ˈlɪθiəm ˈbrəʊmaɪd əbˈzɔːpʃən ˈjuːnɪt/|水-溴化锂吸收式机组
+ammonia-water absorption refrigeration unit|/əˈməʊniə ˈwɔːtə əbˈzɔːpʃən rɪˌfrɪdʒəˈreɪʃən ˈjuːnɪt/|氨-水吸收式制冷机组
+generator|/ˈdʒenəreɪtə/|发生器
+absorber|/əbˈzɔːbə/|吸收器
+indirect- / direct-fired absorption chiller|/ˌɪndaɪˈrekt 或 dəˈrekt faɪəd əbˈzɔːpʃən ˈtʃɪlə/|间接燃烧式/直燃式吸收机组
+Poor / rich solution|/pɔː 或 rɪtʃ səˈluːʃən/|稀/浓溶液
+falling film absorber/ heat exchanger|/ˈfɔːlɪŋ fɪlm əbˈzɔːbə 或 hiːt ɪksˈtʃeɪndʒə/|降膜吸收器/换热器
+ambient air|/ˈæmbiənt eə/|环境空气, 大气
+chlorofluorocarbon (CFC)|/ˌklɔːrəʊˌflʊərəʊˈkɑːbən/|氯氟烃
+hydrochlorofluorocarbon (HCFC)|/ˌhaɪdrəʊˌklɔːrəʊˌflʊərəʊˈkɑːbən/|氢氯氟烃
+freon|/ˈfriːɒn/|氟利昂
+ozone depletion potential|/ˈəʊzəʊn dɪˈpliːʃən pəˈtenʃəl/|臭氧消耗潜能值
+Montreal /Kyoto Protocol|/ˌmɒntriˈɔːl 或 ˈkjəʊtəʊ ˈprəʊtəkɒl/|蒙特利尔/京都议定书
+hydrofluorocarbons (HFCs)|/ˌhaɪdrəʊˈflʊərəʊkɑːbənz/|氢氟烃
+global warming potential (GWP)|/ˈɡləʊbəl ˈwɔːmɪŋ pəˈtenʃəl/|全球变暖潜能值
+natural refrigerant|/ˈnætʃərəl rɪˈfrɪdʒərənt/|天然制冷剂
+azeotropic / non-azeotropic refrigerant / mixture|/ˌeɪziəˈtrɒpɪk 或 nɒn ˌeɪziəˈtrɒpɪk rɪˈfrɪdʒərənt 或 ˈmɪkstʃə/|共沸/非共沸制冷剂/混合物
+transcritical cycle|/trænsˈkrɪtɪkəl ˈsaɪkəl/|跨临界循环
+swash plate / rolling piston / dynamic / reciprocating / rotary / scroll compressor|/swɒʃ pleɪt 或 ˈrəʊlɪŋ ˈpɪstən 或 daɪˈnæmɪk 或 rɪˈsɪprəkeɪtɪŋ 或 ˈrəʊtəri 或 skrəʊl kəmˈpresə/|斜盘/滚动转子/速度/往复/回转/涡旋式压缩机
+piston|/ˈpɪstən/|活塞
+stroke|/strəʊk/|行程
+cylinder|/ˈsɪlɪndə/|气缸
+screw/ helical rotary compressor|/skruː 或 ˈhelɪkəl ˈrəʊtəri kəmˈpresə/|螺杆式压缩机
+single / twin screw compressor|/ˈsɪŋɡəl 或 twɪn skruː kəmˈpresə/|单/双螺杆压缩机
+male / female rotor|/meɪl 或 ˈfiːmeɪl ˈrəʊtə/|阳/阴转子
+rotary vane compressor|/ˈrəʊtəri veɪn kəmˈpresə/|旋(转)叶式压缩机
+automatic control|/ˌɔːtəˈmætɪk kənˈtrəʊl/|自动控制
+control strategy / loop|/kənˈtrəʊl ˈstrætədʒi 或 luːp/|控制策略/回路
+sensor|/ˈsensə/|传感器
+controlled device|/kənˈtrəʊld dɪˈvaɪs/|执行器, 受控装置
+controlled plant|/kənˈtrəʊld plɑːnt/|调节对象, 被控对象
+comparison component|/kəmˈpærɪsən kəmˈpəʊnənt/|比较元件
+controlled variable|/kənˈtrəʊld ˈveəriəbəl/|被控参数, 控制变量, 控制量
+control logic|/kənˈtrəʊl ˈlɒdʒɪk/|控制逻辑
+working fluid /medium|/ˈwɜːkɪŋ ˈfluːɪd 或 ˈmiːdiəm/|工质
+negative / positive feedback|/ˈneɡətɪv 或 ˈpɒzətɪv ˈfiːdbæk/|负/正反馈
+on-off controller|/ɒn ɒf kənˈtrəʊlə/|开关调节器, 通断控制器
+proportional controller|/prəˈpɔːʃənəl kənˈtrəʊlə/|比例控制器
+integral controller|/ˈɪntɪɡrəl kənˈtrəʊlə/|积分控制器
+proportional-integral controller|/prəˈpɔːʃənəl ˈɪntɪɡrəl kənˈtrəʊlə/|比例积分控制器
+proportional-integral-derivative controller|/prəˈpɔːʃənəl ˈɪntɪɡrəl dɪˈrɪvətɪv kənˈtrəʊlə/|比例积分微分控制器
+resistance temperature detector (RTD)|/rɪˈzɪstəns ˈtemprətʃə dɪˈtektə/|热电阻, 电阻式温度检测器
+thermistor|/θɜːˈmɪstə/|热敏电阻
+thermocouple|/ˈθɜːməʊkʌpəl/|热电偶
+humidify / dehumidify|/hjuːˈmɪdɪfaɪ 或 ˌdiːhjuːˈmɪdɪfaɪ/|加/除/减湿
+hydraulic calculation|/haɪˈdrɒlɪk ˌkælkjəˈleɪʃən/|水力计算
+hydraulic imbalance|/haɪˈdrɒlɪk ɪmˈbæləns/|水力不平衡/失调
+velocity method|/vɪˈlɒsəti ˈmeθəd/|假定速度法
+equal friction method|/ˈiːkwəl ˈfrɪkʃən ˈmeθəd/|压损平均法(即等摩阻法)
+static regain method|/ˈstætɪk rɪˈɡeɪn ˈmeθəd/|静压复得法
+hourly / peak load|/ˈaʊəli 或 piːk ləʊd/|逐时/尖峰(或峰值)负荷
+mass /volume flow rate|/mæs 或 ˈvɒljuːm fləʊ reɪt/|质量/体积流量
+floor plan|/flɔː plæn/|平面图
+average specific friction resistance|/ˈævərɪdʒ spəˈsɪfɪk ˈfrɪkʃən rɪˈzɪstəns/|平均比摩阻
+balance valve|/ˈbæləns vælv/|平衡阀
+damper|/ˈdæmpə/|风阀/门
+pipe sizing|/paɪp ˈsaɪzɪŋ/|管道选型
+laminar / turbulent /transitional flow|/ˈlæmɪnə 或 ˈtɜːbjələnt 或 trænˈzɪʃənəl fləʊ/|层/素/过渡流
+laminar boundary layer|/ˈlæmɪnə ˈbaʊndəri ˈleɪə/|层流边界层
+laminar sublayer|/ˈlæmɪnə ˈsʌbleɪə/|层流底层
+dimensionless number|/dɪˈmenʃənləs ˈnʌmbə/|无因次/量纲数
+dynamic viscosity|/daɪˈnæmɪk vɪˈskɒsəti/|动力黏度
+kinematic viscosity|/ˌkɪnɪˈmætɪk vɪˈskɒsəti/|运动黏度
+Reynolds number|/ˈrenəldz ˈnʌmbə/|雷诺数
+elbow|/ˈelbəʊ/|弯头, 肘
+fully developed laminar flow|/ˈfʊli dɪˈveləpt ˈlæmɪnə fləʊ/|充分发展的层流
+friction factor|/ˈfrɪkʃən ˈfæktə/|摩擦阻力系数
+roughness|/ˈrʌfnəs/|粗糙度
+pipe wall|/paɪp wɔːl/|管壁
+incompressible fluid|/ˌɪnkəmˈpresəbəl ˈfluːɪd/|不可压缩流体
+local resistance|/ˈləʊkəl rɪˈzɪstəns/|局部阻力
+frictional resistance / drag|/ˈfrɪkʃənəl rɪˈzɪstəns 或 dræɡ/|沿程阻力
+make-up water system|/ˈmeɪk ʌp ˈwɔːtə ˈsɪstəm/|补水系统
+roof-mounted unit|/ruːf ˈmaʊntɪd ˈjuːnɪt/|屋顶安装式机组
+natural- / forced- draft|/ˈnætʃərəl 或 fɔːst drɑːft/|自然/强制通风
+centrifugal / axial fan/blower|/ˌsentrɪˈfjuːɡəl 或 ˈæksiəl fæn 或 ˈbləʊə/|离心/轴流式风机
+water treatment|/ˈwɔːtə ˈtriːtmənt/|水处理
+overflow pipe|/ˈəʊvəfləʊ paɪp/|溢流管
+static / total pressure|/ˈstætɪk 或 ˈtəʊtəl ˈpreʃə/|静/全压
+dynamic / velocity pressure|/daɪˈnæmɪk 或 vɪˈlɒsəti ˈpreʃə/|动压
+`;
+
+const WORDS = WORDS_RAW.trim().split("\n").map(line => {
+  const [w, p, m] = line.split("|");
+  return { w: w.trim(), p: p.trim(), m: m.trim() };
+});
+
+/* ========== 语料库：e=英文 z=中文（长文章已拆成短段） ========== */
+const CORPUS_RAW = `
+The specific volume is defined as the reciprocal of density.|比体积定义为密度的倒数。
+A familiar device for temperature measurement is the liquid-in-glass thermometer, which consists of a bulb filled with a liquid such as alcohol and a glass capillary tube.|一种常见的温度测量装置是玻璃液体温度计，它由一个充有酒精等液体的球泡和一根玻璃毛细管组成。
+Refrigeration is a technology which is concerned with the cooling of bodies or fluid to temperatures lower than those available in the surroundings at a particular time and place.|制冷是一门技术，涉及将物体或流体冷却到在特定时间和地点低于周围环境可用温度的温度。
+The refrigeration machine can be started and shut down on demand.|制冷机可根据需要启动和停机。
+The vapor can be condensed back into its liquid state.|蒸汽可以冷凝回液态。
+Compressors convert the energy carried by electrical current into kinetic energy.|压缩机将电流所携带的能量转化为动能。
+Water-cooled condenser employs water as the cooling medium.|水冷式冷凝器采用水作为冷却介质。
+As a system undergoes a process, irreversibility may be found within the system as well as within its surroundings.|当系统经历一个过程时，不可逆性可能存在于系统内部，也可能存在于其周围环境中。
+It is a matter of everyday experience that there is a definite direction for spontaneous processes.|自发过程具有确定的方向，这是日常经验中的事实。
+This can be seen by considering the three systems pictured in Fig. 1.|通过考察图1所示三个系统可以看出这一点。
+RED APPLE is a company that makes furniture.|RED APPLE 是一家制造家具的公司。
+Heat pump is a device that can supply both heating and cooling.|热泵是一种既能供热又能供冷的装置。
+One choice to supply clean heating in winter is heat pump, which is driven by electricity.|冬季提供清洁供暖的一种选择是由电力驱动的热泵。
+Walk-in coolers are main food storage fixtures.|步入式冷库是主要的食品储存设施。
+The principal function of any kind of display fixture is to exhibit the product or commodity as attractively as possible in order to stimulate sales.|任何类型的展示设施的主要功能都是尽可能吸引人地展示产品或商品，以促进销售。
+ACCUMULATOR OR RECEIVER?|气液分离器还是贮液器？
+The tank on the suction line between the evaporator and the compressor is a suction accumulator.|蒸发器与压缩机之间吸气管路上的罐是吸气气液分离器。
+The tank on the liquid line between the condenser and TXV is a liquid receiver.|冷凝器与热力膨胀阀之间液体管路上的罐是贮液器。
+They do look similar but they serve two completely different purposes.|它们看起来确实相似，但用途完全不同。
+The primary function of the suction accumulator is to catch and hold any liquid refrigerant that didn't boil off in the evaporator.|吸气气液分离器的主要功能是捕集并容纳任何未在蒸发器中蒸发的液态制冷剂。
+Liquid refrigerant getting to the compressor can damage the pistons or scrolls.|进入压缩机的液态制冷剂会损坏活塞或涡旋盘。
+This liquid will also dilute or even flush the oil out of the compressor crankcase.|这些液体还会稀释甚至冲出压缩机曲轴箱中的润滑油。
+This loss of oil will prevent proper lubrication to the compressor, causing compressor damage or failure.|润滑油损失会妨碍压缩机得到适当润滑，导致压缩机损坏或失效。
+Liquid slugging can occur even on a properly installed system with the loss of gas flow.|即使系统安装正确，在气流损失时也可能发生液击。
+Improper evaporator gas flow due to dirty filters, coil or loose belt will have the same effect.|由于过滤器脏堵、盘管脏堵或皮带松动造成的蒸发器气流不当也会产生同样影响。
+Low suction temperatures such as on a heat pump in the heating mode can also cause liquid slugging of the compressor.|低吸气温度（例如热泵在制热模式下）也可能导致压缩机液击。
+Many heat pump manufactures utilize suction accumulators as standard equipment.|许多热泵制造商会将吸气气液分离器作为标准设备。
+The accumulator function is quite simple.|气液分离器的功能相当简单。
+The suction gas leaving the evaporator enters the accumulator at the top and passes through a baffle or screen.|离开蒸发器的吸气气体从顶部进入气液分离器，并经过挡板或滤网。
+Any liquid present collects on the screen and falls to the bottom of the accumulator.|存在的任何液体会收集在滤网上并落到底部。
+Inside the accumulator is a U shaped tube that will allow only the refrigerant vapor to exit and enter the compressor.|气液分离器内部有一根U形管，只允许制冷剂蒸气排出并进入压缩机。
+A small orifice in the bottom of the U tube will allow any oil that collected in the accumulator to exit and return to the compressor through the suction line.|U形管底部的小孔允许收集在气液分离器中的任何油排出，并通过吸气管返回压缩机。
+Accumulator failures are rare on properly maintained systems.|维护良好的系统中气液分离器故障很少见。
+A plugged orifice in the U tube would be the most likely problem.|U形管中的小孔堵塞是最可能的问题。
+This plugged orifice would prevent oil from returning to the compressor.|该小孔堵塞会阻止油返回压缩机。
+An accumulator is inexpensive and can be added to almost any system that has experienced compressor slugging.|气液分离器价格低廉，几乎可以添加到任何经历过压缩机液击的系统中。
+The cause of the slugging should still be determined and corrected if possible.|但仍应确定液击原因并尽可能纠正。
+Systems that run under low load conditions may be a good place to add an accumulator.|低负荷条件下运行的系统可能是添加气液分离器的合适场合。
+Parker recommends that the accumulator is replaced when a compressor is being replaced.|Parker建议在更换压缩机时更换气液分离器。
+Contaminated oil from the old compressor may be in the old accumulator.|旧压缩机中的污染油可能存在于旧气液分离器中。
+Also, a considerable amount of oil may still be in the old accumulator.|此外，旧气液分离器中可能仍存有相当数量的油。
+This oil combined with the oil from the new compressor may create an oil overcharge.|这些油与新压缩机的油混合可能造成油量过多。
+Proper accumulator sizing is important when replacing or adding.|更换或添加气液分离器时，正确选型很重要。
+The pressure drop across the accumulator should be kept as low as possible.|气液分离器上的压降应尽可能低。
+The accumulator's internal volume must be sufficient.|气液分离器的内部容积必须足够。
+On a heat pump system with a fixed metering device the accumulator should be capable of holding 70% of the system charge.|对于采用固定节流装置的热泵系统，气液分离器应能容纳系统充注量的70%。
+In a TXV system, the accumulator should be able to handle 50% of the system charge.|在TXV系统中，气液分离器应能处理系统充注量的50%。
+Refer to sizing charts for proper sizing.|请参考选型图表进行正确选型。
+The accumulator should never be sized by connection sizes [2].|气液分离器绝不应按连接管尺寸选型[2]。
+While refrigerant boils inside the tubes of most commercial evaporators, in one important class of liquid-chilling evaporator the refrigerant boils outside the tubes.|虽然大多数商用蒸发器中制冷剂在管内沸腾，但在某一类重要的液体冷却蒸发器中，制冷剂在管外沸腾。
+This type of evaporator is standard in centrifugal compressor applications.|这种蒸发器在离心式压缩机应用中很常见。
+Sometimes such an evaporator is used in conjunction with reciprocating compressors, but in such applications provision must be made for returning oil to the compressor.|有时这种蒸发器与往复式压缩机配合使用，但在这种应用中必须采取措施使油返回压缩机。
+In the evaporators where refrigerant boils in the tubes, the velocity of the refrigerant vapor is maintained high enough to carry oil back to the compressor [3].|在制冷剂于管内沸腾的蒸发器中，制冷剂蒸气的速度要保持足够高，以便将油带回压缩机[3]。
+Water/lithium bromide is an absorption working fluid which has been used widely since 1950s when the technology was pioneered by several manufacturers in the U.S.|水/溴化锂是一种吸收式工质，自20世纪50年代几家美国制造商开创该技术以来已被广泛使用。
+This working fluid utilizes water as the refrigerant and is therefore limited to refrigeration temperatures above 0°C.|该工质用水作为制冷剂，因此限于0°C以上的制冷温度。
+Absorption machines based on water/lithium bromide are typically configured as water chillers for air conditioning systems in large buildings.|基于水/溴化锂的吸收式机组通常配置为大型建筑空调系统的冷水机组。
+Machines are available in sizes ranging from 10 to 1500 Ton (Note: Ton is a unit of refrigeration capacity, 1Ton = 12000Btu/h = 3.517kW).|机组容量范围为10至1500冷吨（注：冷吨是制冷量单位，1冷吨=12000Btu/h=3.517kW）。
+The coefficient of performance (COP) of these machines, defined as the refrigeration capacity divided by the driving heat input, typically varies over the range 0.7 < COP < 1.2 depending on the particular cycle configuration.|这些机组的性能系数（COP）定义为制冷量除以驱动热输入，通常随具体循环配置在0.7<COP<1.2范围内变化。
+These machines have a reputation for consistent, dependable service among mechanical room operators.|在机房操作人员中，这些机组以服务稳定可靠著称。
+The main competing technology is vapor compression chillers and choice between the two depends strongly on economic factors [4].|主要竞争技术是蒸气压缩式冷水机组，两者之间的选择在很大程度上取决于经济因素[4]。
+`;
+
+const CORPUS = CORPUS_RAW.trim().split("\n").map(line => {
+  const [e, z] = line.split("|");
+  return { e: e.trim(), z: z.trim() };
+});
+
+/* ========== 状态与工具 ========== */
+const SPELL_KEY = "englishLearn.spell.v3";
+const TRANS_KEY = "englishLearn.trans.v3";
+const MODE_KEY = "englishLearn.mode.v3";
+
+let spellState, transState, currentMode = "spelling";
+let spellLocked = false;
+let phoneticVisible = false;
+let answerVisible = false;
+let translationVisible = false;
+
+function safeParse(key, fallback) {
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch { return fallback; }
+}
+function saveJSON(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+function normalizeAnswer(value) {
+  let text = String(value).trim();
+  if (!STRICT_MODE) text = text.toLowerCase().replace(/\s+/g, " ");
+  return text;
+}
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function defaultSpellState() {
+  return {
+    order: WORDS.map((_, i) => i),
+    index: 0,
+    correct: 0,
+    wrongAttempts: 0,
+    skipped: 0,
+    completed: false,
+    random: false,
+    correctPositions: []
+  };
+}
+function loadSpellState() {
+  const saved = safeParse(SPELL_KEY, null);
+  if (saved && Array.isArray(saved.order) && saved.order.length === WORDS.length) {
+    const index = Number.isInteger(saved.index) ? saved.index : 0;
+    return {
+      order: saved.order,
+      index: Math.max(0, Math.min(index, WORDS.length - 1)),
+      correct: Number(saved.correct) || 0,
+      wrongAttempts: Number(saved.wrongAttempts) || 0,
+      skipped: Number(saved.skipped) || 0,
+      completed: Boolean(saved.completed),
+      random: Boolean(saved.random),
+      correctPositions: Array.isArray(saved.correctPositions) ? saved.correctPositions : []
+    };
+  }
+  return defaultSpellState();
+}
+function defaultTransState() { return { index: 0, completed: false }; }
+function loadTransState() {
+  const saved = safeParse(TRANS_KEY, null);
+  if (saved && Number.isInteger(saved.index) && saved.index >= 0 && saved.index < CORPUS.length) {
+    return { index: saved.index, completed: Boolean(saved.completed) };
+  }
+  return defaultTransState();
+}
+function saveSpellState() { saveJSON(SPELL_KEY, spellState); }
+function saveTransState() { saveJSON(TRANS_KEY, transState); }
+
+/* ========== 单词模式 ========== */
+function setSpellFeedback(text, type) {
+  const el = document.getElementById("feedback");
+  el.textContent = text || "";
+  el.className = "feedback" + (type ? " " + type : "");
+}
+
+function renderSpell(focusInput) {
+  const progressEl = document.getElementById("spellProgress");
+  const playArea = document.getElementById("spellPlayArea");
+  const summaryEl = document.getElementById("spellSummary");
+  const randomToggle = document.getElementById("randomToggle");
+  const meaningMain = document.getElementById("meaningMain");
+  const phoneticTip = document.getElementById("phoneticTip");
+  const answerTip = document.getElementById("answerTip");
+  const input = document.getElementById("spellInput");
+  const submitBtn = document.getElementById("submitSpell");
+  const phoneticBtn = document.getElementById("showPhonetic");
+  const answerBtn = document.getElementById("showAnswer");
+  const prevBtn = document.getElementById("prevSpell");
+  const nextBtn = document.getElementById("nextSpell");
+
+  randomToggle.checked = Boolean(spellState.random);
+
+  if (spellState.completed) {
+    progressEl.textContent = "已完成 " + WORDS.length + " / " + WORDS.length;
+    playArea.classList.add("hidden");
+    summaryEl.classList.remove("hidden");
+    document.getElementById("summaryText").textContent =
+      "正确 " + spellState.correct + " 个，错误尝试 " + spellState.wrongAttempts + " 次，跳过 " + spellState.skipped + " 个。";
+    return;
+  }
+
+  playArea.classList.remove("hidden");
+  summaryEl.classList.add("hidden");
+
+  const word = WORDS[spellState.order[spellState.index]];
+  const answered = spellState.correctPositions.includes(spellState.index);
+  progressEl.textContent = "第 " + (spellState.index + 1) + " / " + WORDS.length + " 个";
+  meaningMain.textContent = word.m;
+  phoneticTip.textContent = word.p;
+  answerTip.textContent = word.w;
+  phoneticTip.classList.toggle("hidden", !phoneticVisible);
+  answerTip.classList.toggle("hidden", !(answerVisible || answered));
+  phoneticBtn.textContent = phoneticVisible ? "隐藏音标提示" : "查看音标提示";
+  answerBtn.textContent = answerVisible || answered ? "隐藏答案" : "查看答案";
+
+  input.disabled = answered || spellLocked;
+  submitBtn.disabled = answered || spellLocked;
+  phoneticBtn.disabled = answered || spellLocked;
+  answerBtn.disabled = answered || spellLocked;
+  prevBtn.disabled = spellLocked || spellState.index === 0;
+  nextBtn.disabled = spellLocked;
+
+  if (answered) {
+    setSpellFeedback("该题已答对，可点击“下一个”继续。", "success");
+  }
+
+  if (focusInput && !answered) setTimeout(() => input.focus(), 0);
+}
+
+function startSpellRound() {
+  const order = WORDS.map((_, i) => i);
+  if (spellState.random) shuffle(order);
+  spellState = {
+    order,
+    index: 0,
+    correct: 0,
+    wrongAttempts: 0,
+    skipped: 0,
+    completed: false,
+    random: Boolean(spellState.random),
+    correctPositions: []
+  };
+  spellLocked = false;
+  phoneticVisible = false;
+  answerVisible = false;
+  document.getElementById("spellInput").value = "";
+  document.getElementById("spellInput").disabled = false;
+  saveSpellState();
+  renderSpell(true);
+  setSpellFeedback("", "");
+}
+
+function goNextSpell(bySkip) {
+  if (spellState.completed || spellLocked) return;
+  const answered = spellState.correctPositions.includes(spellState.index);
+  if (bySkip && !answered) spellState.skipped += 1;
+  if (spellState.index + 1 >= WORDS.length) {
+    spellState.completed = true;
+  } else {
+    spellState.index += 1;
+  }
+  spellLocked = false;
+  phoneticVisible = false;
+  answerVisible = false;
+  document.getElementById("spellInput").value = "";
+  document.getElementById("spellInput").disabled = false;
+  saveSpellState();
+  setSpellFeedback(bySkip ? "已跳过当前单词。" : "", bySkip ? "info" : "");
+  renderSpell(true);
+}
+
+function goPrevSpell() {
+  if (spellState.completed || spellLocked) return;
+  if (spellState.index <= 0) {
+    setSpellFeedback("已经是第一个单词。", "info");
+    return;
+  }
+  spellState.index -= 1;
+  phoneticVisible = false;
+  answerVisible = false;
+  document.getElementById("spellInput").value = "";
+  document.getElementById("spellInput").disabled = false;
+  spellLocked = false;
+  saveSpellState();
+  setSpellFeedback("已返回上一个单词。", "info");
+  renderSpell(true);
+}
+
+function handleSpellSubmit() {
+  if (spellLocked || spellState.completed) return;
+  if (spellState.correctPositions.includes(spellState.index)) return;
+
+  const input = document.getElementById("spellInput");
+  const raw = input.value;
+
+  if (!normalizeAnswer(raw)) {
+    setSpellFeedback("请输入单词后再提交。", "info");
+    input.focus();
+    return;
+  }
+
+  const word = WORDS[spellState.order[spellState.index]];
+  const isCorrect = normalizeAnswer(raw) === normalizeAnswer(word.w);
+
+  if (isCorrect) {
+    if (!spellState.correctPositions.includes(spellState.index)) {
+      spellState.correctPositions.push(spellState.index);
+      spellState.correct += 1;
+    }
+    spellLocked = true;
+    input.disabled = true;
+    phoneticVisible = false;
+    answerVisible = false;
+    setSpellFeedback("回答正确", "success");
+    saveSpellState();
+    setTimeout(() => {
+      if (spellState.index + 1 >= WORDS.length) {
+        spellState.completed = true;
+        spellLocked = false;
+        saveSpellState();
+        renderSpell(false);
+      } else {
+        spellState.index += 1;
+        spellLocked = false;
+        input.disabled = false;
+        input.value = "";
+        setSpellFeedback("", "");
+        saveSpellState();
+        renderSpell(true);
+      }
+    }, 800);
+  } else {
+    spellState.wrongAttempts += 1;
+    answerVisible = true;
+    saveSpellState();
+    setSpellFeedback("拼写错误，正确答案是：" + word.w, "error");
+    input.value = "";
+    input.focus();
+    renderSpell(false);
+    setSpellFeedback("拼写错误，正确答案是：" + word.w, "error");
+  }
+}
+
+/* ========== 语料模式 ========== */
+function setTransFeedback(text, type) {
+  const el = document.getElementById("transFeedback");
+  el.textContent = text || "";
+  el.className = "feedback" + (type ? " " + type : "");
+}
+
+function renderTrans() {
+  const progressEl = document.getElementById("transProgress");
+  const area = document.getElementById("transArea");
+  const done = document.getElementById("transDone");
+  const englishEl = document.getElementById("englishText");
+  const translationEl = document.getElementById("translationText");
+  const toggleBtn = document.getElementById("transToggle");
+  const prevBtn = document.getElementById("prevTrans");
+
+  if (transState.completed) {
+    progressEl.textContent = "已完成 " + CORPUS.length + " / " + CORPUS.length + " 段";
+    area.classList.add("hidden");
+    done.classList.remove("hidden");
+    return;
+  }
+
+  area.classList.remove("hidden");
+  done.classList.add("hidden");
+  const item = CORPUS[transState.index];
+  progressEl.textContent = "第 " + (transState.index + 1) + " / " + CORPUS.length + " 段";
+  englishEl.textContent = item.e;
+  translationEl.textContent = item.z;
+  translationEl.classList.toggle("hidden", !translationVisible);
+  toggleBtn.textContent = translationVisible ? "隐藏翻译" : "显示翻译";
+  prevBtn.disabled = transState.index === 0;
+}
+
+function handleTransToggle() {
+  if (transState.completed) return;
+  translationVisible = !translationVisible;
+  renderTrans();
+  setTransFeedback(translationVisible ? "已显示翻译。" : "已隐藏翻译。", "info");
+}
+
+function handlePrevTrans() {
+  if (transState.completed) {
+    transState.completed = false;
+    transState.index = CORPUS.length - 1;
+    translationVisible = false;
+    saveTransState();
+    renderTrans();
+    setTransFeedback("已返回上一段。", "info");
+    return;
+  }
+  if (transState.index <= 0) {
+    setTransFeedback("已经是第一段语料。", "info");
+    return;
+  }
+  transState.index -= 1;
+  translationVisible = false;
+  saveTransState();
+  renderTrans();
+  setTransFeedback("已返回上一段。", "info");
+}
+
+function handleNextTrans() {
+  if (transState.completed) return;
+  if (transState.index + 1 >= CORPUS.length) {
+    transState.completed = true;
+    translationVisible = false;
+    saveTransState();
+    renderTrans();
+    setTransFeedback("全部语料已完成。", "success");
+  } else {
+    transState.index += 1;
+    translationVisible = false;
+    saveTransState();
+    renderTrans();
+    setTransFeedback("已切换到下一段。", "info");
+  }
+}
+
+function restartTrans() {
+  transState = defaultTransState();
+  translationVisible = false;
+  saveTransState();
+  renderTrans();
+  setTransFeedback("已重新开始语料翻译。", "info");
+}
+
+/* ========== 模式切换与重置 ========== */
+function setMode(mode) {
+  currentMode = mode === "translation" ? "translation" : "spelling";
+  try { localStorage.setItem(MODE_KEY, currentMode); } catch {}
+  const spellingSection = document.getElementById("spellingSection");
+  const translationSection = document.getElementById("translationSection");
+  const spellingBtn = document.getElementById("modeSpelling");
+  const translationBtn = document.getElementById("modeTranslation");
+
+  if (currentMode === "spelling") {
+    spellingSection.classList.remove("hidden");
+    translationSection.classList.add("hidden");
+    spellingBtn.classList.add("active");
+    translationBtn.classList.remove("active");
+    renderSpell(false);
+  } else {
+    spellingSection.classList.add("hidden");
+    translationSection.classList.remove("hidden");
+    spellingBtn.classList.remove("active");
+    translationBtn.classList.add("active");
+    renderTrans();
+  }
+}
+
+function resetAllProgress() {
+  try {
+    localStorage.removeItem(SPELL_KEY);
+    localStorage.removeItem(TRANS_KEY);
+  } catch {}
+  spellState = defaultSpellState();
+  transState = defaultTransState();
+  spellLocked = false;
+  phoneticVisible = false;
+  answerVisible = false;
+  translationVisible = false;
+  document.getElementById("spellInput").value = "";
+  document.getElementById("spellInput").disabled = false;
+  renderSpell(true);
+  renderTrans();
+  setSpellFeedback("进度已重置。", "info");
+  setTransFeedback("进度已重置。", "info");
+}
+
+/* ========== 初始化 ========== */
+function init() {
+  spellState = loadSpellState();
+  transState = loadTransState();
+  const savedMode = (() => {
+    try { return localStorage.getItem(MODE_KEY); } catch { return null; }
+  })();
+
+  document.getElementById("modeSpelling").addEventListener("click", () => setMode("spelling"));
+  document.getElementById("modeTranslation").addEventListener("click", () => setMode("translation"));
+
+  document.getElementById("submitSpell").addEventListener("click", handleSpellSubmit);
+  document.getElementById("spellInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSpellSubmit();
+    }
+  });
+
+  document.getElementById("showPhonetic").addEventListener("click", () => {
+    if (spellState.completed || spellLocked) return;
+    if (spellState.correctPositions.includes(spellState.index)) return;
+    phoneticVisible = !phoneticVisible;
+    renderSpell(false);
+    document.getElementById("spellInput").focus();
+  });
+
+  document.getElementById("showAnswer").addEventListener("click", () => {
+    if (spellState.completed || spellLocked) return;
+    if (spellState.correctPositions.includes(spellState.index)) return;
+    answerVisible = !answerVisible;
+    renderSpell(false);
+    document.getElementById("spellInput").focus();
+  });
+
+  document.getElementById("prevSpell").addEventListener("click", goPrevSpell);
+  document.getElementById("nextSpell").addEventListener("click", () => goNextSpell(true));
+
+  document.getElementById("randomToggle").addEventListener("change", (event) => {
+    spellState.random = event.target.checked;
+    phoneticVisible = false;
+    answerVisible = false;
+    startSpellRound();
+    setSpellFeedback(spellState.random ? "已切换为随机顺序，并重新开始本轮。" : "已切换为顺序模式，并重新开始本轮。", "info");
+  });
+
+  document.getElementById("restartSpell").addEventListener("click", () => {
+    startSpellRound();
+    setSpellFeedback("已重新开始本轮。", "info");
+  });
+
+  document.getElementById("transToggle").addEventListener("click", handleTransToggle);
+  document.getElementById("prevTrans").addEventListener("click", handlePrevTrans);
+  document.getElementById("nextTrans").addEventListener("click", handleNextTrans);
+  document.getElementById("restartTrans").addEventListener("click", restartTrans);
+
+  document.querySelectorAll(".reset-progress").forEach(button => {
+    button.addEventListener("click", resetAllProgress);
+  });
+
+  setMode(savedMode === "translation" ? "translation" : "spelling");
+}
+
+init();
+</script>
+</body>
+</html>
